@@ -58,6 +58,9 @@ public class CEntityForm extends JFrame {
   private BufferedImage m_bimage2 = new BufferedImage(m_finger2.FP_IMAGE_WIDTH ,m_finger2.FP_IMAGE_HEIGHT,BufferedImage.TYPE_INT_RGB );
   private double finger1[] = new double[m_finger1.FP_TEMPLATE_MAX_SIZE];
   private double finger2[] = new double[m_finger2.FP_TEMPLATE_MAX_SIZE];
+
+    private Huella h1 = new Huella(new java.io.File("").getAbsolutePath()+"/ProcessedSample1.bmp");
+    private Huella h2 = new Huella(new java.io.File("").getAbsolutePath()+"/ProcessedSample2.bmp");
   
   
   public CEntityForm() {
@@ -91,72 +94,65 @@ public class CEntityForm extends JFrame {
    
     this.setTitle("Entity");
     this.setSize(new Dimension(900, 700));
+
+
       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+      try {
+          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      }catch(Exception ex) {
+          ex.printStackTrace();
+      }
   }
 
   private void jButtonStep1_actionPerformed(ActionEvent e)
   {
-	  try
-	    {        
-	    //picture1
-	    //Set picture new
-	    m_bimage1=ImageIO.read(new File(new java.io.File("").getAbsolutePath()+"/ProcessedSample1.bmp")) ;
-	    m_panel1.setBufferedImage(m_bimage1);
-	    //Send image for skeletinization
-	    m_finger1.setFingerPrintImage(m_bimage1) ;
-	    finger1=m_finger1.getFingerPrintTemplate();
-	     //See what skeletinized image looks like
-	    m_bimage1 = m_finger1.getFingerPrintImageDetail();
-	    m_panel1.setBufferedImage(m_bimage1);
-	    jTextField1.setText(m_finger1.ConvertFingerPrintTemplateDoubleToString(finger1));
+
+	    m_panel1.setBufferedImage(h1.getFotoDetalle());
+	    jTextField1.setText(h1.getMatrizString());
 	        
-	    //picture2
-	    //Set picture new
-	    m_bimage2=ImageIO.read(new File(new java.io.File("").getAbsolutePath()+"/ProcessedSample2.bmp")) ;
-	    m_panel2.setBufferedImage(m_bimage2);
-	    //Send image for skeletinization
-	    m_finger2.setFingerPrintImage(m_bimage2) ;
-	    finger2=m_finger2.getFingerPrintTemplate();
-	    //See what skeletinized image looks like
-	    m_bimage2 = m_finger2.getFingerPrintImageDetail();
-	    m_panel2.setBufferedImage(m_bimage2);
-	    jTextField2.setText(m_finger2.ConvertFingerPrintTemplateDoubleToString(finger2));
-	         
-	      
-	    
-	    }
-	    catch (Exception ex)
-	    {
-	    JOptionPane.showMessageDialog (null,ex.getMessage(),"Error",JOptionPane.PLAIN_MESSAGE);
-	    }        
+
+	    m_panel2.setBufferedImage(h2.getFotoDetalle());
+	    jTextField2.setText(h2.getMatrizString());
+
 
   }
 
   private void jButtonStep2_actionPerformed(ActionEvent e)
   {
-      try
-      {
-    	  m_bimage1=ImageIO.read(new File(new java.io.File("").getAbsolutePath()+"/ProcessedSample1.bmp")) ;
-    	    m_panel1.setBufferedImage(m_bimage1);
-    	    
-    	    //Send image for skeletinization
-    	    m_finger1.setFingerPrintImage(m_bimage1) ;
-    	    finger1=m_finger1.getFingerPrintTemplate();
-    	     
-    	    //See what skeletinized image looks like
-    	    m_bimage1 = m_finger1.getFingerPrintImageDetail();
+
+      //Creamos el objeto JFileChooser
+      JFileChooser fc=new JFileChooser();
+
+      fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+      fc.setMultiSelectionEnabled(true);
+
+    //Abrimos la ventana, guardamos la opcion seleccionada por el usuario
+      int seleccion=fc.showOpenDialog(this.getContentPane());
+
+    //Si el usuario, pincha en aceptar
+      if(seleccion==JFileChooser.APPROVE_OPTION){
+
+          //Seleccionamos el fichero
+          File[] ficheros = fc.getSelectedFiles();
+
+          File fichero = ficheros[0];
+          //Ecribe la ruta del fichero seleccionado en el campo de texto
+          h1 = new Huella(fichero);
+
+
+      }
+
+    	    m_panel1.setBufferedImage(h1.getFoto());
+
     	    //Print skeletinized fingerprint
-    	    m_panel2.setBufferedImage(m_bimage1);
+    	    m_panel2.setBufferedImage(h1.getFotoDetalle());
 
     	    //m_panel1.setBufferedImage(m_bimage1);
-    	    jTextField1.setText(m_finger1.ConvertFingerPrintTemplateDoubleToString(finger1));
+    	    jTextField1.setText(h1.getMatrizString());
     	    jTextField2.setText("");
 
-       }
-      catch (Exception ex)
-      {
-         JOptionPane.showMessageDialog (null,ex.getMessage() ,"Error Message",JOptionPane.PLAIN_MESSAGE);
-      }
   }
 
   private void jButtonStep3_actionPerformed(ActionEvent e)
@@ -164,7 +160,7 @@ public class CEntityForm extends JFrame {
       //match one print
      try
       {
-        JOptionPane.showMessageDialog (null,Double.toString(m_finger1.Match(finger1 , finger2,65,false)),"Match %",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog (null,Double.toString(h1.coincidencia(h2,65)),"Match %",JOptionPane.PLAIN_MESSAGE);
       }
       catch (Exception ex)
       {
