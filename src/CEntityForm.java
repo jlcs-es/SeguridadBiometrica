@@ -43,6 +43,9 @@ public class CEntityForm extends JFrame {
     class NuevoUsuarioForm extends JPanel{
         private JTextField nombreTF = new JTextField();
         private JButton boton = new JButton("Huellas...");
+        private File[] ficheros;
+        private JButton save = new JButton("Guardar");
+
 
         private void choseFiles(ActionEvent e){
             JFileChooser fc=new JFileChooser(new java.io.File("."));
@@ -52,20 +55,11 @@ public class CEntityForm extends JFrame {
             int seleccion=fc.showOpenDialog(this);
 
             if(seleccion==JFileChooser.APPROVE_OPTION){
-                File[] ficheros = fc.getSelectedFiles();
-
-
-                ///TODO: no se comprueba que haya puesto el nombre antes
-                Usuario u = new Usuario(nombreTF.getText());
-                for (File f : ficheros) {
-                    Huella h = new Huella(f);
-                    u.addHuella(h);
-                }
-
-                CatalogoUsuarios.getInstance().addUsuario(u);
-
+                ficheros = fc.getSelectedFiles();
             }
         }
+
+
 
         public NuevoUsuarioForm(){
             this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -78,7 +72,21 @@ public class CEntityForm extends JFrame {
                 }
             });
             this.add(boton);
+            save.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ///TODO: no se comprueba que haya puesto el nombre antes
+                    Usuario u = new Usuario(nombreTF.getText());
+                    for (File f : ficheros) {
+                        Huella h = new Huella(f);
+                        u.addHuella(h);
+                    }
+                    CatalogoUsuarios.getInstance().addUsuario(u);
+                }
+            });
+            this.add(save);
         }
+
     }
 
 
@@ -130,7 +138,7 @@ public class CEntityForm extends JFrame {
           public void actionPerformed(ActionEvent e) {
               JFrame nuF = new JFrame();
               nuF.setContentPane(new NuevoUsuarioForm());
-              nuF.setSize(new Dimension(200,100));
+              nuF.setSize(new Dimension(200,125));
               nuF.setVisible(true);
           }
       });
@@ -228,4 +236,4 @@ public class CEntityForm extends JFrame {
 
 
 
-}//End Class entity
+}

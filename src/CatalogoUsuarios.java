@@ -15,6 +15,8 @@ public class CatalogoUsuarios {
 
     public void addUsuario(Usuario u){
         usuarios.put(u.getId(), u);
+
+        System.out.println("Nuevo usuario " + u.getName()  + "::" + u.getId());
     }
 
 }
