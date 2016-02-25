@@ -30,6 +30,9 @@ public class Usuario implements Comparable<Object>{
         this.name = name;
     }
 
+    public void addHuella(Huella h){
+        huellas.add(h);
+    }
 
     @Override
     public int compareTo(Object o) {

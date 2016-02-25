@@ -39,6 +39,49 @@ public class CEntityForm extends JFrame {
     }
   }
 
+
+    class NuevoUsuarioForm extends JPanel{
+        private JTextField nombreTF = new JTextField();
+        private JButton boton = new JButton("Huellas...");
+
+        private void choseFiles(ActionEvent e){
+            JFileChooser fc=new JFileChooser(new java.io.File("."));
+
+            fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            fc.setMultiSelectionEnabled(true);
+            int seleccion=fc.showOpenDialog(this);
+
+            if(seleccion==JFileChooser.APPROVE_OPTION){
+                File[] ficheros = fc.getSelectedFiles();
+
+
+                ///TODO: no se comprueba que haya puesto el nombre antes
+                Usuario u = new Usuario(nombreTF.getText());
+                for (File f : ficheros) {
+                    Huella h = new Huella(f);
+                    u.addHuella(h);
+                }
+
+                CatalogoUsuarios.getInstance().addUsuario(u);
+
+            }
+        }
+
+        public NuevoUsuarioForm(){
+            this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+            this.add(new JLabel("Nombre usuario:"));
+            this.add(nombreTF);
+            boton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    choseFiles(e);
+                }
+            });
+            this.add(boton);
+        }
+    }
+
+
   private JToolBar jtool = new JToolBar();
   private JPanel jimage = new JPanel();
   private JButton jButtonStep1 = new JButton("Calculation");
@@ -61,7 +104,9 @@ public class CEntityForm extends JFrame {
 
     private Huella h1 = new Huella(new java.io.File("").getAbsolutePath()+"/ProcessedSample1.bmp");
     private Huella h2 = new Huella(new java.io.File("").getAbsolutePath()+"/ProcessedSample2.bmp");
-  
+
+
+    private JButton newuserformButton = new JButton("Nuevo usuario");
   
   public CEntityForm() {
    jButtonStep1.addActionListener(new java.awt.event.ActionListener() {
@@ -79,6 +124,16 @@ public class CEntityForm extends JFrame {
         jButtonStep3_actionPerformed(e);
       }
     });
+
+      newuserformButton.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+              JFrame nuF = new JFrame();
+              nuF.setContentPane(new NuevoUsuarioForm());
+              nuF.setSize(new Dimension(200,100));
+              nuF.setVisible(true);
+          }
+      });
   
     jtool.setLayout(new GridLayout(4,1));
     jtool.add(jButtonStep1);
@@ -86,11 +141,14 @@ public class CEntityForm extends JFrame {
     jtool.add(jButtonStep3);
     jtool.add(jTextField1);
     jtool.add(jTextField2);
+      jtool.add(newuserformButton);
+
       
     this.getContentPane().setLayout(new GridLayout(2,2));
     this.getContentPane().add(m_panel1);
     this.getContentPane().add(m_panel2);
     this.getContentPane().add(jtool);
+
    
     this.setTitle("Entity");
     this.setSize(new Dimension(900, 700));

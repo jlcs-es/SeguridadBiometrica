@@ -7,6 +7,12 @@ import java.util.UUID;
 public class CatalogoUsuarios {
     HashMap<UUID,Usuario> usuarios = new HashMap<UUID, Usuario>();
 
+    private static CatalogoUsuarios catalogo = new CatalogoUsuarios();
+
+    public static CatalogoUsuarios getInstance(){
+        return catalogo;
+    }
+
     public void addUsuario(Usuario u){
         usuarios.put(u.getId(), u);
     }
