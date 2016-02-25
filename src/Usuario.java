@@ -5,7 +5,7 @@ import java.util.UUID;
 /**
  * Created by José Luis on 25/02/2016.
  */
-public class Usuario implements Comparable<Object>{
+public class Usuario implements Comparable<Usuario>{
     private final HashSet<Huella> huellas = new HashSet<Huella>() ;
     private UUID id = UUID.randomUUID();
     private String name;
@@ -34,12 +34,21 @@ public class Usuario implements Comparable<Object>{
         huellas.add(h);
     }
 
+    public boolean matches(Huella h, double umbral){
+        for (Huella huella : huellas) {
+            if(huella.coincide(h,umbral))
+                return true;
+        }
+        return false;
+    }
+
     @Override
-    public int compareTo(Object o) {
-        if(o instanceof Usuario)
-            return this.id.compareTo(((Usuario)o).getId());
-        if(o instanceof Huella)
-            return 0;
-        return 0;
+    public int compareTo(Usuario o) {
+        return this.id.compareTo(((Usuario)o).getId());
+    }
+
+    @Override
+    public String toString(){
+        return "Usuario: " + id.toString() + " - " + name + " - No. huellas: " + huellas.size() + "\n";
     }
 }

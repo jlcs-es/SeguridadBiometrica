@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 
 /**
@@ -17,6 +18,15 @@ public class CatalogoUsuarios {
         usuarios.put(u.getId(), u);
 
         System.out.println("Nuevo usuario " + u.getName()  + "::" + u.getId());
+    }
+
+    public HashSet<Usuario> findMatch(Huella huella, double umbral){
+        HashSet<Usuario> coincidencias = new HashSet<Usuario>();
+        for (Usuario u : usuarios.values()) {
+            if(u.matches(huella, umbral))
+                coincidencias.add(u);
+        }
+        return coincidencias;
     }
 
 }

@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * Created by José Luis on 25/02/2016.
  */
-public class Huella implements Comparable<Huella> {
+public class Huella {
     private BufferedImage foto;
     private CFingerPrint huella = new CFingerPrint();
 
@@ -40,6 +40,9 @@ public class Huella implements Comparable<Huella> {
         return huella.ConvertFingerPrintTemplateDoubleToString(huella.getFingerPrintTemplate());
     }
 
+    public double coincidencia(Huella h2){
+        return coincidencia(h2, 65);
+    }
 
     public double coincidencia(Huella h2, int threshold){
         return huella.Match(this.getMatriz(),h2.getMatriz(),threshold,false);
@@ -50,9 +53,5 @@ public class Huella implements Comparable<Huella> {
         return umbral < huella.Match(this.getMatriz(),h2.getMatriz(),65,false);
     }
 
-    @Override
-    public int compareTo(Huella o) {
-        ///TODO
-        return 0;
-    }
+
 }

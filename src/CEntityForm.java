@@ -2,6 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.lang.Exception;
+import java.util.HashSet;
 
 
 public class CEntityForm extends JFrame {
@@ -13,6 +14,7 @@ public class CEntityForm extends JFrame {
     private JButton newuserformButton = new JButton("Nuevo usuario");
     private JTextField matriz1TextField = new JTextField();
     private JTextField matriz2TextField = new JTextField();
+    private JTextPane panelTexto = new JTextPane();
 
 //    private CFingerPrint m_finger1 = new CFingerPrint();
 //    private CFingerPrint m_finger2 = new CFingerPrint();
@@ -35,7 +37,7 @@ public class CEntityForm extends JFrame {
         this.getContentPane().add(m_panel1);
         this.getContentPane().add(m_panel2);
         this.getContentPane().add(panelBotones());
-        this.getContentPane().add(new JTextPane());
+        this.getContentPane().add(panelTexto);
 
 
         this.setTitle("Entity");
@@ -68,6 +70,11 @@ public class CEntityForm extends JFrame {
         oneToOneMatchButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 oneToOneMatchAction(e);
+            }
+        });
+        oneToManyMatchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                oneToManyMatchAction(e);
             }
         });
 
@@ -135,5 +142,11 @@ public class CEntityForm extends JFrame {
         }
     }
 
+
+    private void oneToManyMatchAction(ActionEvent e) {
+        HashSet<Usuario> usuarios = CatalogoUsuarios.getInstance().findMatch(h1, 20.0);
+        ///TODO: mostrar información útil, si hace falta, quitar el panelTexto por una tabla
+        panelTexto.setText("Usuarios\n" + usuarios.toString());
+    }
 
 }
