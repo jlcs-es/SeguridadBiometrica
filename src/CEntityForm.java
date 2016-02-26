@@ -1,5 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import java.awt.event.*;
 import java.lang.Exception;
 import java.util.HashSet;
@@ -33,12 +35,13 @@ public class CEntityForm extends JFrame {
 
     public CEntityForm() {
 
+        panelTexto.setEditable(false);
         this.getContentPane().setLayout(new GridLayout(2, 2));
         this.getContentPane().add(m_panel1);
         this.getContentPane().add(m_panel2);
         this.getContentPane().add(panelBotones());
         this.getContentPane().add(panelTexto);
-
+        menuBar();
 
         this.setTitle("Entity");
         this.setSize(new Dimension(670, 750));
@@ -81,18 +84,14 @@ public class CEntityForm extends JFrame {
         newuserformButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame nuF = new JFrame();
-                nuF.setContentPane(new NuevoUsuarioForm());
-                nuF.setSize(new Dimension(400, 125));
-                nuF.setTitle("Nuevo Usuario");
-                nuF.setVisible(true);
+                newUserAction();
             }
         });
 
         oneToManyMatchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ///TODOS
+                oneToManyMatchAction(e);
             }
         });
 
@@ -107,6 +106,14 @@ public class CEntityForm extends JFrame {
         return panel;
     }
 
+
+    private void newUserAction(){
+        JFrame nuF = new JFrame();
+        nuF.setContentPane(new NuevoUsuarioForm());
+        nuF.setSize(new Dimension(400, 125));
+        nuF.setTitle("Nuevo Usuario");
+        nuF.setVisible(true);
+    }
 
     private void calculateAction(ActionEvent e) {
 
@@ -147,6 +154,99 @@ public class CEntityForm extends JFrame {
         HashSet<Usuario> usuarios = CatalogoUsuarios.getInstance().findMatch(h1, 20.0);
         ///TODO: mostrar información útil, si hace falta, quitar el panelTexto por una tabla
         panelTexto.setText("Usuarios\n" + usuarios.toString());
+    }
+
+
+    private void menuBar(){
+        //Where the GUI is created:
+        JMenuBar menuBar;
+        JMenu menu, submenu;
+        JMenuItem menuItem;
+        JRadioButtonMenuItem rbMenuItem;
+        JCheckBoxMenuItem cbMenuItem;
+
+//Create the menu bar.
+        menuBar = new JMenuBar();
+
+//Build the first menu.
+        menu = new JMenu("A Menu");
+        menu.setMnemonic(KeyEvent.VK_A);
+        menu.getAccessibleContext().setAccessibleDescription(
+                "The only menu in this program that has menu items");
+        menuBar.add(menu);
+
+//a group of JMenuItems
+        menuItem = new JMenuItem("A text-only menu item",
+                KeyEvent.VK_T);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_1, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "This doesn't really do anything");
+        menu.add(menuItem);
+
+        menuItem = new JMenuItem("Both text and icon",
+                new ImageIcon("images/middle.gif"));
+        menuItem.setMnemonic(KeyEvent.VK_B);
+        menu.add(menuItem);
+
+        menuItem = new JMenuItem(new ImageIcon("images/middle.gif"));
+        menuItem.setMnemonic(KeyEvent.VK_D);
+        menu.add(menuItem);
+
+//a group of radio button menu items
+        menu.addSeparator();
+        ButtonGroup group = new ButtonGroup();
+        rbMenuItem = new JRadioButtonMenuItem("A radio button menu item");
+        rbMenuItem.setSelected(true);
+        rbMenuItem.setMnemonic(KeyEvent.VK_R);
+        group.add(rbMenuItem);
+        menu.add(rbMenuItem);
+
+        rbMenuItem = new JRadioButtonMenuItem("Another one");
+        rbMenuItem.setMnemonic(KeyEvent.VK_O);
+        group.add(rbMenuItem);
+        menu.add(rbMenuItem);
+
+//a group of check box menu items
+        menu.addSeparator();
+        cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
+        cbMenuItem.setMnemonic(KeyEvent.VK_C);
+        menu.add(cbMenuItem);
+
+        cbMenuItem = new JCheckBoxMenuItem("Another one");
+        cbMenuItem.setMnemonic(KeyEvent.VK_H);
+        menu.add(cbMenuItem);
+
+//a submenu
+        menu.addSeparator();
+        submenu = new JMenu("A submenu");
+        submenu.setMnemonic(KeyEvent.VK_S);
+
+        menuItem = new JMenuItem("An item in the submenu");
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_2, ActionEvent.ALT_MASK));
+        submenu.add(menuItem);
+
+        menuItem = new JMenuItem("Another item");
+        submenu.add(menuItem);
+        menu.add(submenu);
+
+//Build second menu in the menu bar.
+        menu = new JMenu("Usuarios");
+
+        menuItem = new JMenuItem("Nuevo Usuario");
+        menuItem.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newUserAction();
+            }
+        });
+        menu.add(menuItem);
+
+        menuBar.add(menu);
+
+
+        this.setJMenuBar(menuBar);
     }
 
 }
