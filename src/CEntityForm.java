@@ -1,35 +1,25 @@
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import java.awt.event.*;
+import java.io.File;
 import java.lang.Exception;
 import java.util.HashSet;
 
 
 public class CEntityForm extends JFrame {
 
-    private JButton calculationButton = new JButton("Calculation");
-    private JButton imageProcessingButton = new JButton("Image Processing");
+    private JButton calculationButton = new JButton("Calcular 1 huella");
+    private JButton compareButton = new JButton("Comparar 2 huellas");
     private JButton oneToOneMatchButton = new JButton("1 to 1 Match");
-    private JButton oneToManyMatchButton = new JButton("1 to m Match");
+    private JButton oneToManyMatchButton = new JButton("1 to N Match");
     private JButton newuserformButton = new JButton("Nuevo usuario");
-    private JTextField matriz1TextField = new JTextField();
-    private JTextField matriz2TextField = new JTextField();
+    private JTextField matriz1TextField = new JTextField("Matriz huella IZQ");
+    private JTextField matriz2TextField = new JTextField("Matriz huella DER*");
     private JTextPane panelTexto = new JTextPane();
 
-//    private CFingerPrint m_finger1 = new CFingerPrint();
-//    private CFingerPrint m_finger2 = new CFingerPrint();
-//    private CFingerPrintGraphics m_fingergfx = new CFingerPrintGraphics();
+
     private BJPanel m_panel1 = new BJPanel();
     private BJPanel m_panel2 = new BJPanel();
-//    private BufferedImage m_bimage1 = new BufferedImage(m_finger1.FP_IMAGE_WIDTH, m_finger1.FP_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
-//    private BufferedImage m_bimage2 = new BufferedImage(m_finger2.FP_IMAGE_WIDTH, m_finger2.FP_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
-//    private double finger1[] = new double[m_finger1.FP_TEMPLATE_MAX_SIZE];
-//    private double finger2[] = new double[m_finger2.FP_TEMPLATE_MAX_SIZE];
-
-    private Huella h1 = new Huella(new java.io.File("").getAbsolutePath() + "/ProcessedSample1.bmp");
-    private Huella h2 = new Huella(new java.io.File("").getAbsolutePath() + "/ProcessedSample2.bmp");
 
 
 
@@ -62,25 +52,24 @@ public class CEntityForm extends JFrame {
         JPanel panel = new JPanel();
         calculationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                calculateAction(e);
+                calculateAction();
             }
         });
-        imageProcessingButton.addActionListener(new java.awt.event.ActionListener() {
+        compareButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                imageProcessAction(e);
+                compareAction();
             }
         });
         oneToOneMatchButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                oneToOneMatchAction(e);
+                oneToOneMatchAction();
             }
         });
         oneToManyMatchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                oneToManyMatchAction(e);
+                oneToManyMatchAction();
             }
         });
-
         newuserformButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,150 +77,239 @@ public class CEntityForm extends JFrame {
             }
         });
 
-        oneToManyMatchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                oneToManyMatchAction(e);
-            }
-        });
-
         panel.setLayout(new GridLayout(4, 1));
         panel.add(calculationButton);
-        panel.add(imageProcessingButton);
+        panel.add(compareButton);
         panel.add(oneToOneMatchButton);
         panel.add(oneToManyMatchButton);
         panel.add(matriz1TextField);
         panel.add(matriz2TextField);
         panel.add(newuserformButton);
+
+        JPanel jp = new JPanel();
+        jp.setLayout(new FlowLayout());
+        jp.add(new Label("Nº puntos comparados: " + ProgramVariables.NUMBER_OF_POINTS));
+        jp.add(new Label("Mínimo % match: " + ProgramVariables.PERCENTAGE_OF_SIMILARITY));
+        jp.add(new Label("Ver menú 'Parámetros'"));
+        panel.add(jp);
+
         return panel;
     }
 
 
     private void newUserAction(){
-        JFrame nuF = new JFrame();
-        nuF.setContentPane(new NuevoUsuarioForm());
-        nuF.setSize(new Dimension(400, 125));
-        nuF.setTitle("Nuevo Usuario");
-        nuF.setVisible(true);
+        JFrame NUForm = new NuevoUsuarioForm();
+        NUForm.setVisible(true);
     }
 
-    private void calculateAction(ActionEvent e) {
+    private void calculateAction() {
 
-        m_panel1.setBufferedImage(h1.getFotoDetalle());
-        matriz1TextField.setText(h1.getMatrizString());
+        JFileChooser fc = new JFileChooser(new java.io.File("."));
 
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        int seleccion = fc.showOpenDialog(this);
 
-        m_panel2.setBufferedImage(h2.getFotoDetalle());
-        matriz2TextField.setText(h2.getMatrizString());
+        File fichero;
 
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            fichero = fc.getSelectedFile();
+            Huella huella = new Huella(fichero);
 
-    }
+            m_panel1.setBufferedImage(huella.getFoto());
+            m_panel2.setBufferedImage(huella.getFotoDetalle());
+            matriz1TextField.setText(huella.getMatrizString());
 
-    private void imageProcessAction(ActionEvent e) {
-
-        m_panel1.setBufferedImage(h1.getFoto());
-
-        //Print skeletinized fingerprint
-        m_panel2.setBufferedImage(h1.getFotoDetalle());
-
-        //m_panel1.setBufferedImage(m_bimage1);
-        matriz1TextField.setText(h1.getMatrizString());
-        matriz2TextField.setText("");
-
-    }
-
-    private void oneToOneMatchAction(ActionEvent e) {
-        //match one print
-        try {
-            JOptionPane.showMessageDialog(null, Double.toString(h1.coincidencia(h2, 65)), "Match %", JOptionPane.PLAIN_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error Message", JOptionPane.PLAIN_MESSAGE);
         }
+
+        panelTexto.setText("[IZQ] huella elegida  --  [DER] detalles\n");
+
+    }
+
+    private void compareAction() {
+
+        Huella huella = null;
+        Huella huella2 = null;
+
+        JFileChooser fc = new JFileChooser(new java.io.File("."));
+
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        int seleccion = fc.showOpenDialog(this);
+
+        File fichero;
+
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            fichero = fc.getSelectedFile();
+            huella = new Huella(fichero);
+
+            m_panel1.setBufferedImage(huella.getFotoDetalle());
+            matriz1TextField.setText(huella.getMatrizString());
+
+        }
+
+        seleccion = fc.showOpenDialog(this);
+
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            fichero = fc.getSelectedFile();
+            huella2 = new Huella(fichero);
+
+            m_panel2.setBufferedImage(huella2.getFotoDetalle());
+            matriz2TextField.setText(huella2.getMatrizString());
+
+        }
+
+        panelTexto.setText("[IZQ] huella 1  --  [DER] huella 2\n" +
+                "Porcentaje: " + huella.coincidencia(huella2) +"%\n");
+
+    }
+
+    private void oneToOneMatchAction() {
+
+
+        JFileChooser fc = new JFileChooser(new java.io.File("."));
+
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        int seleccion = fc.showOpenDialog(this);
+
+        File fichero;
+
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            fichero = fc.getSelectedFile();
+            final Huella huella = new Huella(fichero);
+
+            m_panel1.setBufferedImage(huella.getFotoDetalle());
+            matriz1TextField.setText(huella.getMatrizString());
+
+            //Choose user
+            final JFrame jf = new JFrame();
+            jf.setLayout(new GridLayout(2,1));
+            jf.setSize(new Dimension(300,100));
+            final JComboBox<Usuario> cb = new JComboBox<Usuario>(CatalogoUsuarios.getInstance().getUsuarios());
+            jf.getContentPane().add(cb);
+            JButton bton = new JButton("OK");
+            bton.addActionListener(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Usuario chosen = (Usuario) cb.getSelectedItem();
+                    jf.dispose();
+                    double porcentaje = chosen.bestMatchScore(huella);
+                    Huella h2 = chosen.bestMatch(huella);
+                    m_panel2.setBufferedImage(h2.getFotoDetalle());
+                    matriz2TextField.setText(h2.getMatrizString());
+
+                    ///TODO: mostrar información útil, si hace falta, quitar el panelTexto por una tabla
+                    panelTexto.setText( chosen + "\n" +
+                            "Mejor porcentaje entre las huellas registradas del usuario: " + porcentaje + "%\n" +
+                            "\n[IZQ] huella elegida  --  [DER] huella del usuario\n"
+                    );
+                }
+            });
+            jf.getContentPane().add(bton);
+            jf.setVisible(true);
+
+
+        }
+
     }
 
 
-    private void oneToManyMatchAction(ActionEvent e) {
-        HashSet<Usuario> usuarios = CatalogoUsuarios.getInstance().findMatch(h1, 20.0);
-        ///TODO: mostrar información útil, si hace falta, quitar el panelTexto por una tabla
-        panelTexto.setText("Usuarios\n" + usuarios.toString());
+    private void oneToManyMatchAction() {
+        JFileChooser fc = new JFileChooser(new java.io.File("."));
+
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        int seleccion = fc.showOpenDialog(this);
+
+        File fichero;
+
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            fichero = fc.getSelectedFile();
+
+            Huella huella = new Huella(fichero);
+
+            m_panel1.setBufferedImage(huella.getFoto());
+            m_panel2.setBufferedImage(huella.getFotoDetalle());
+            matriz1TextField.setText(huella.getMatrizString());
+
+            HashSet<Usuario> usuarios = CatalogoUsuarios.getInstance().findMatch(huella);
+            ///TODO: mostrar información útil, si hace falta, quitar el panelTexto por una tabla
+            String text = "";
+            for(Usuario u : usuarios){
+                text += u.bestMatchScore(huella) + "% - " + u.toString() + "\n";
+            }
+
+            panelTexto.setText(text + "\n[IZQ] huella elegida  --  [DER] detalle huella elegida");
+        }
+
     }
 
 
     private void menuBar(){
-        //Where the GUI is created:
         JMenuBar menuBar;
         JMenu menu, submenu;
         JMenuItem menuItem;
         JRadioButtonMenuItem rbMenuItem;
         JCheckBoxMenuItem cbMenuItem;
 
-//Create the menu bar.
+
         menuBar = new JMenuBar();
 
-//Build the first menu.
-        menu = new JMenu("A Menu");
-        menu.setMnemonic(KeyEvent.VK_A);
-        menu.getAccessibleContext().setAccessibleDescription(
-                "The only menu in this program that has menu items");
+        menu = new JMenu("Parámetros");
+
+        menuItem = new JMenuItem("Puntos entre huellas");
+        menuItem.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final JFrame jf = new JFrame();
+                jf.getContentPane().setLayout(new GridLayout(3,1));
+                jf.getContentPane().add(new Label("Número de puntos a comparar:"));
+                final JFormattedTextField tf = new JFormattedTextField(new Integer(ProgramVariables.NUMBER_OF_POINTS));
+                jf.getContentPane().add(tf);
+                JButton btn = new JButton("Guardar");
+                btn.addActionListener(new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ProgramVariables.NUMBER_OF_POINTS = (Integer)tf.getValue();
+                        jf.dispose();
+                    }
+                });
+                jf.getContentPane().add(btn);
+                jf.setSize(new Dimension(200,100));
+                jf.setVisible(true);
+            }
+        });
+        menu.add(menuItem);
+
+
+        menuItem = new JMenuItem("Porcentaje de similitud");
+        menuItem.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final JFrame jf = new JFrame();
+                jf.getContentPane().setLayout(new GridLayout(3,1));
+                jf.getContentPane().add(new Label("Porcentaje mínimo de similitud:"));
+                final JFormattedTextField tf = new JFormattedTextField(new Double(ProgramVariables.PERCENTAGE_OF_SIMILARITY));
+                jf.getContentPane().add(tf);
+                JButton btn = new JButton("Guardar");
+                btn.addActionListener(new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ProgramVariables.PERCENTAGE_OF_SIMILARITY = (Double) tf.getValue();
+                        jf.dispose();
+                    }
+                });
+                jf.getContentPane().add(btn);
+                jf.setSize(new Dimension(200,100));
+                jf.setVisible(true);
+            }
+        });
+        menu.add(menuItem);
+
         menuBar.add(menu);
 
-//a group of JMenuItems
-        menuItem = new JMenuItem("A text-only menu item",
-                KeyEvent.VK_T);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_1, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "This doesn't really do anything");
-        menu.add(menuItem);
 
-        menuItem = new JMenuItem("Both text and icon",
-                new ImageIcon("images/middle.gif"));
-        menuItem.setMnemonic(KeyEvent.VK_B);
-        menu.add(menuItem);
-
-        menuItem = new JMenuItem(new ImageIcon("images/middle.gif"));
-        menuItem.setMnemonic(KeyEvent.VK_D);
-        menu.add(menuItem);
-
-//a group of radio button menu items
-        menu.addSeparator();
-        ButtonGroup group = new ButtonGroup();
-        rbMenuItem = new JRadioButtonMenuItem("A radio button menu item");
-        rbMenuItem.setSelected(true);
-        rbMenuItem.setMnemonic(KeyEvent.VK_R);
-        group.add(rbMenuItem);
-        menu.add(rbMenuItem);
-
-        rbMenuItem = new JRadioButtonMenuItem("Another one");
-        rbMenuItem.setMnemonic(KeyEvent.VK_O);
-        group.add(rbMenuItem);
-        menu.add(rbMenuItem);
-
-//a group of check box menu items
-        menu.addSeparator();
-        cbMenuItem = new JCheckBoxMenuItem("A check box menu item");
-        cbMenuItem.setMnemonic(KeyEvent.VK_C);
-        menu.add(cbMenuItem);
-
-        cbMenuItem = new JCheckBoxMenuItem("Another one");
-        cbMenuItem.setMnemonic(KeyEvent.VK_H);
-        menu.add(cbMenuItem);
-
-//a submenu
-        menu.addSeparator();
-        submenu = new JMenu("A submenu");
-        submenu.setMnemonic(KeyEvent.VK_S);
-
-        menuItem = new JMenuItem("An item in the submenu");
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_2, ActionEvent.ALT_MASK));
-        submenu.add(menuItem);
-
-        menuItem = new JMenuItem("Another item");
-        submenu.add(menuItem);
-        menu.add(submenu);
-
-//Build second menu in the menu bar.
         menu = new JMenu("Usuarios");
 
         menuItem = new JMenuItem("Nuevo Usuario");
@@ -239,6 +317,25 @@ public class CEntityForm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 newUserAction();
+            }
+        });
+        menu.add(menuItem);
+
+        menuItem = new JMenuItem("1 to N match");
+        menuItem.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                oneToManyMatchAction();
+            }
+        });
+        menu.add(menuItem);
+
+
+        menuItem = new JMenuItem("1 to 1 match");
+        menuItem.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                oneToOneMatchAction();
             }
         });
         menu.add(menuItem);

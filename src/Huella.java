@@ -41,16 +41,7 @@ public class Huella {
     }
 
     public double coincidencia(Huella h2){
-        return coincidencia(h2, 65);
-    }
-
-    public double coincidencia(Huella h2, int threshold){
-        return huella.Match(this.getMatriz(),h2.getMatriz(),threshold,false);
-    }
-
-    public boolean coincide(Huella h2, double umbral){
-        ///TODO: ¿el 65 de CEntityForm de donde sale?
-        return umbral < huella.Match(this.getMatriz(),h2.getMatriz(),65,false);
+        return huella.Match(this.getMatriz(),h2.getMatriz(),ProgramVariables.NUMBER_OF_POINTS,false);
     }
 
 
