@@ -15,6 +15,8 @@ public class CEntityForm extends JFrame {
     private JButton newuserformButton = new JButton("Nuevo usuario");
     private JTextField matriz1TextField = new JTextField("Matriz huella IZQ");
     private JTextField matriz2TextField = new JTextField("Matriz huella DER*");
+    private Label lblPoints = new Label("Nº puntos comparados: " + ProgramVariables.NUMBER_OF_POINTS);
+    private Label lblPercentage = new Label("Mínimo % match: " + ProgramVariables.PERCENTAGE_OF_SIMILARITY);
     private JTextPane panelTexto = new JTextPane();
 
 
@@ -88,8 +90,8 @@ public class CEntityForm extends JFrame {
 
         JPanel jp = new JPanel();
         jp.setLayout(new FlowLayout());
-        jp.add(new Label("Nº puntos comparados: " + ProgramVariables.NUMBER_OF_POINTS));
-        jp.add(new Label("Mínimo % match: " + ProgramVariables.PERCENTAGE_OF_SIMILARITY));
+        jp.add(lblPoints);
+        jp.add(lblPercentage);
         jp.add(new Label("Ver menú 'Parámetros'"));
         panel.add(jp);
 
@@ -199,7 +201,6 @@ public class CEntityForm extends JFrame {
                     m_panel2.setBufferedImage(h2.getFotoDetalle());
                     matriz2TextField.setText(h2.getMatrizString());
 
-                    ///TODO: mostrar información útil, si hace falta, quitar el panelTexto por una tabla
                     panelTexto.setText( chosen + "\n" +
                             "Mejor porcentaje entre las huellas registradas del usuario: " + porcentaje + "%\n" +
                             "\n[IZQ] huella elegida  --  [DER] huella del usuario\n"
@@ -234,7 +235,6 @@ public class CEntityForm extends JFrame {
             matriz1TextField.setText(huella.getMatrizString());
 
             HashSet<Usuario> usuarios = CatalogoUsuarios.getInstance().findMatch(huella);
-            ///TODO: mostrar información útil, si hace falta, quitar el panelTexto por una tabla
             String text = "";
             for(Usuario u : usuarios){
                 text += u.bestMatchScore(huella) + "% - " + u.toString() + "\n";
@@ -272,6 +272,7 @@ public class CEntityForm extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         ProgramVariables.NUMBER_OF_POINTS = (Integer)tf.getValue();
+                        lblPoints.setText("Nº puntos comparados: " + ProgramVariables.NUMBER_OF_POINTS);
                         jf.dispose();
                     }
                 });
@@ -297,6 +298,7 @@ public class CEntityForm extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         ProgramVariables.PERCENTAGE_OF_SIMILARITY = (Double) tf.getValue();
+                        lblPercentage.setText("Mínimo % match: " + ProgramVariables.PERCENTAGE_OF_SIMILARITY);
                         jf.dispose();
                     }
                 });
